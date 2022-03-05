@@ -36,9 +36,27 @@ import SearchGeonames from './SearchGeonames.vue';
         color: var(--all-color-primary);
     }
 
+    .tools {
+        position: relative;
+        display: flex;
+        width: 280px;
+    }
+
 @media only screen and (max-width: 800px) {
     .top-page {
         padding: 0 16px;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+    .app-title {
+        font-size: 1.2rem;
+        padding: 8px 0;
+        width: 100%;
+    }
+
+    .tools {
+        /* padding: 8px 0; */
+        width: 100%;
     }
 }
 </style>
