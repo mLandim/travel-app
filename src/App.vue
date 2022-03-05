@@ -38,6 +38,7 @@ import Trip from './views/Trip.vue';
 
   --all-color-background: #F4F8FF;
   --all-color-surface: #FFFFFF;
+  --all-c0l0r-surface-controls: #e6ebf3;
 
   --all-color-error: #B00020;
   --all-color-success: #00875A;
