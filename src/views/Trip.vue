@@ -1,8 +1,25 @@
-<script setup></script>
+<script setup>
+import { reactive, watch } from 'vue'
+import { storeToRefs } from 'pinia'
+import { geoStore } from '../stores/geonames'
+
+// Geonames store with pinia
+const geonameStore = geoStore()
+const { selectedGeoData } = storeToRefs(geonameStore)
+
+watch(selectedGeoData, (newData) => {
+  console.log(newData)
+  Object.assign(cityView, newData)
+  })
+
+// City info shown in page
+const cityView = reactive({})
+
+</script>
 <template>
     <div class="trip-name">
         <span class="text">Visitando</span>
-        <span class="trip-city">Fortaleza</span>
+        <span class="trip-city">{{cityView.toponymName}}, {{cityView.countryName}}</span>
         
     </div>
 </template>
