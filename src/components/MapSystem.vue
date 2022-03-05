@@ -1,35 +1,40 @@
 <script setup lang="ts">
 
-import { ref, reactive } from 'vue'
-import leaflet, { LatLng, Layer, LayerGroup, Map, TileLayer } from 'leaflet'
+import { ref, reactive, watch } from 'vue'
 import { onMounted } from 'vue';
-
 import { storeToRefs } from 'pinia'
+import leaflet, { LatLng, Layer, LayerGroup, Map, TileLayer } from 'leaflet'
+import axios from 'axios'
+
 import { geoStore } from '../stores/geonames'
 
-const store = geoStore()
-const { selectedGeoData } = storeToRefs(store)
+// Geonames store with pinia
+const geonameStore = geoStore()
+const { selectedGeoData } = storeToRefs(geonameStore)
 
-let myMap: Map
+watch(selectedGeoData, (newData) => {
+  console.log(newData)
+  Object.assign(cityView, newData)
+  panMap(parseFloat(newData.lat), parseFloat(newData.lng))
+})
+
+// Mapbox access token
 let accessToken = 'pk.eyJ1IjoibWxhbmRpbSIsImEiOiJjbDBhOWRodXQwa3kwM3BwOXQxcHZ4anM4In0.EI-5ZLkyEb3vS2Pu7ZddIg'
+let geonamesUser = 'mlandim'
 
-console.log(accessToken)
+// initializing map
+let myMap: Map
 
+// City info shown in page
+const cityView = reactive({})
 
-
-
+// coord of map center
 const defaultLat = ref(0)
 const defaultLong = ref(0)
 
-const mapsTiles = reactive([
-  {text:'Default', tile:'mapbox/streets-v11'},
-  {text:'Light', tile:'mapbox/light-v10'},
-  {text:'Dark', tile:'mapbox/dark-v10'},
-  {text:'Satélite', tile:'mapbox/satellite-v9'},
-  {text:'Nav Day', tile:'mapbox/navigation-day-v1'},
-  {text:'Nav Night', tile:'mapbox/navigation-night-v1'}
-])
 
+
+// list of layers available for the map
 const defaultLayer: TileLayer = leaflet.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     maxZoom: 18,
@@ -46,48 +51,65 @@ const lightLayer: TileLayer = leaflet.tileLayer('https://api.mapbox.com/styles/v
     zoomOffset: -1,
     accessToken: accessToken
   })
-const OpenStreetMap_CH = leaflet.tileLayer('https://tile.osm.ch/switzerland/{z}/{x}/{y}.png', {
+const OpenStreetMap_CH: TileLayer = leaflet.tileLayer('https://tile.osm.ch/switzerland/{z}/{x}/{y}.png', {
 	maxZoom: 18,
 	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 	bounds: [[45, 5], [48, 11]]
 });
-const OpenStreetMap_Mapnik = leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+const OpenStreetMap_Mapnik: TileLayer = leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 	maxZoom: 19,
 	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 });
 
+// Object with layers for control in map
 const baseLayers: any = {
   'Default': defaultLayer,
-  'Light': lightLayer,
+  // 'Light': lightLayer,
   // 'OpenStreet': OpenStreetMap_CH,
   // 'Oms Mapnik':OpenStreetMap_Mapnik
 }
 
 const selectedTile = ref(0)
+// because only here the element map-id will be available
+// calling setupMap and getGeolocation
 onMounted(async () => {
   setupMap()
   // drawMap()
   getGeolocation()
 })
 
-
-// Geolocation data
+// Geolocation data and search on geonames for city with lat, long
 function getGeolocation() {
   console.log('getGeolocation')
   if ('geolocation' in navigator) {
     
-    navigator.geolocation.getCurrentPosition((position) => {
+    navigator.geolocation.getCurrentPosition(async (position) => {
       console.log(position)
       defaultLat.value = position.coords.latitude
       defaultLong.value = position.coords.longitude
-      panMap()
+      try {
+        const url = `http://api.geonames.org/findNearbyPlaceNameJSON?lat=${position.coords.latitude}&lng=${position.coords.longitude}&cities=cities1000&username=${geonamesUser}`
+        const result = await axios.get(url)
+        console.log(result.data)
+        
+        if (result.status===200 && 'geonames' in result.data) {
+          let cityFound = result.data.geonames[0]
+          Object.assign(cityView, cityFound)
+          geonameStore.updateGeoData(cityFound)
+          panMap(cityFound.lat, cityFound.lng)
+        }
+
+      } catch (error) {
+          console.error(error.message)
+      }
+      
     })
   } else {
     console.log('Sem geolocalização')
   }
 }
 
-// Draw map
+// Prepare and draw map
 function setupMap() {
 
   console.log('setupMap')
@@ -95,36 +117,29 @@ function setupMap() {
   myMap = leaflet.map('map-id', {
     center: [defaultLat.value, defaultLong.value],
     zoom: 10,
-    layers: [defaultLayer, lightLayer, OpenStreetMap_CH, OpenStreetMap_Mapnik]
+    layers: [defaultLayer] //, lightLayer, OpenStreetMap_CH, OpenStreetMap_Mapnik
   })
-  leaflet.control.layers(baseLayers).addTo(myMap)
+  // leaflet.control.layers(baseLayers).addTo(myMap)
+
+}
+
+// Update center location
+function panMap(lat:number, lng: number){
+  myMap.flyTo([lat, lng], 10, {
+    duration: 0.25
+  })
 }
 
 
-
-
-// Update location
-function panMap(){
-  myMap.flyTo([defaultLat.value, defaultLong.value], 13)
-  // myMap.panTo([defaultLat.value, defaultLong.value])
-  // myMap.setZoom(5)
-}
-
-// function updateTile(tile) {
-//   selectedTile.value = tile
-//   drawMap()
-// }
-// function drawMap() {
-//   console.log('drawMap')
-//   leaflet.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-//     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-//     maxZoom: 18,
-//     id: mapsTiles[selectedTile.value].tile,
-//     tileSize: 512,
-//     zoomOffset: -1,
-//     accessToken: 'pk.eyJ1IjoibWxhbmRpbSIsImEiOiJjbDBhOWRodXQwa3kwM3BwOXQxcHZ4anM4In0.EI-5ZLkyEb3vS2Pu7ZddIg'
-//   }).addTo(myMap)
-// }
+// Map tiles - deprecated
+// const mapsTiles = reactive([
+//   {text:'Default', tile:'mapbox/streets-v11'},
+//   {text:'Light', tile:'mapbox/light-v10'},
+//   {text:'Dark', tile:'mapbox/dark-v10'},
+//   {text:'Satélite', tile:'mapbox/satellite-v9'},
+//   {text:'Nav Day', tile:'mapbox/navigation-day-v1'},
+//   {text:'Nav Night', tile:'mapbox/navigation-night-v1'}
+// ])
 
 
 </script>
