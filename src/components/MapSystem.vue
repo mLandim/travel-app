@@ -88,7 +88,7 @@ function getGeolocation() {
       defaultLat.value = position.coords.latitude
       defaultLong.value = position.coords.longitude
       try {
-        const url = `http://api.geonames.org/findNearbyPlaceNameJSON?lat=${position.coords.latitude}&lng=${position.coords.longitude}&cities=cities1000&username=${geonamesUser}`
+        const url = `https://travel-app-node-ts.herokuapp.com/api/v1/geonames/reversed?lat=${position.coords.latitude}&lng=${position.coords.longitude}`
         const result = await axios.get(url)
         console.log(result.data)
         

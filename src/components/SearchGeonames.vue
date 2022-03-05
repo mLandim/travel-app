@@ -15,8 +15,8 @@ const results = ref([])
 const searchText = ref('')
 const search = async () => {
     try {
-        const url = ref(`http://api.geonames.org/searchJSON?name_startsWith=${searchText.value}&maxRows=${maxResult.value}&username=${userName.value}`)
-        const result = await axios.get(url.value)
+        const url = `https://travel-app-node-ts.herokuapp.com/api/v1/geonames/search-city/${searchText.value}?maxResult=5`
+        const result = await axios.get(url)
         console.log(result.data)
         if (result.status===200 && 'geonames' in result.data) {
             results.value = [...result.data.geonames]
