@@ -4,6 +4,8 @@ export const geoStore = defineStore('geoStore', {
     state: () => {
         return {
             selectedGeoData: null,
+            userName: 'mlandim',
+            maxResult: 5
         }
     },
 
