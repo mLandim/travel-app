@@ -1,12 +1,14 @@
 <script setup lang="ts">
 
-import { ref, reactive, watch } from 'vue'
-import { onMounted } from 'vue';
+import { ref, reactive, watch, onMounted, inject } from 'vue'
+
 import { storeToRefs } from 'pinia'
 import leaflet, { LatLng, Layer, LayerGroup, Map, TileLayer } from 'leaflet'
 import axios from 'axios'
 
 import { geoStore } from '../stores/geonames'
+
+const MAPBOX_KEY = inject('MAPBOX_KEY')
 
 // Geonames store with pinia
 const geonameStore = geoStore()
@@ -19,7 +21,7 @@ watch(selectedGeoData, (newData) => {
 })
 
 // Mapbox access token
-let accessToken = 'pk.eyJ1IjoibWxhbmRpbSIsImEiOiJjbDBhOWRodXQwa3kwM3BwOXQxcHZ4anM4In0.EI-5ZLkyEb3vS2Pu7ZddIg'
+let accessToken = MAPBOX_KEY
 let geonamesUser = 'mlandim'
 
 // initializing map
