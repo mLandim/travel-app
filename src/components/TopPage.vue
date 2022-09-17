@@ -4,7 +4,7 @@ import SearchGeonames from './SearchGeonames.vue';
 <template>
     <div class="top-page">
         <div class="app-title">
-            App Name
+            Travel Test App
         </div>
         <div class="tools">
             <SearchGeonames/>
