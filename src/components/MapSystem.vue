@@ -8,7 +8,7 @@ import axios from 'axios'
 
 import { geoStore } from '../stores/geonames'
 
-const MAPBOX_KEY = inject('MAPBOX_KEY')
+const MAPBOX_KEY: string = inject('MAPBOX_KEY') ?? ''
 
 // Geonames store with pinia
 const geonameStore = geoStore()
@@ -43,7 +43,7 @@ const defaultLayer: TileLayer = leaflet.tileLayer('https://api.mapbox.com/styles
     id: 'mapbox/streets-v11',
     tileSize: 512,
     zoomOffset: -1,
-    accessToken: 'pk.eyJ1IjoibWxhbmRpbSIsImEiOiJjbDBhOWRodXQwa3kwM3BwOXQxcHZ4anM4In0.EI-5ZLkyEb3vS2Pu7ZddIg'
+    accessToken: accessToken
   })
 const lightLayer: TileLayer = leaflet.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
