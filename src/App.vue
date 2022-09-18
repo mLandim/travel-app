@@ -33,8 +33,8 @@ import Trip from './views/Trip.vue';
 
 :root {
  
-  --all-color-primary: #1454c4;
-  --all-color-secondary: #0ABCD1;
+  --all-color-primary: #2e518f;
+  --all-color-secondary: #5a7bb5;
 
   --all-color-background: #F4F8FF;
   --all-color-surface: #FFFFFF;
@@ -49,6 +49,7 @@ import Trip from './views/Trip.vue';
   --all-color-on-surface-light: #3A4C5F;
   --all-color-on-surface-light2: #607d8b;
   --all-color-on-surface-light3: #798FA5;
+  --all-color-on-surface-light4: #e7f3ff;
   
 
   --all-color-on-primary: #FFFFFF;
@@ -59,7 +60,7 @@ import Trip from './views/Trip.vue';
   --all-color-on-error: #FFFFFF;
   
 
-  --top-page-height: 80px;
+  --top-page-height: 88px;
 
 }
 
@@ -99,12 +100,15 @@ body {
 .main-content {
   position: relative;
   display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   width: 40%;
   height: calc(100vh - var(--top-page-height));
   padding: 24px;
   overflow-y: auto;
   box-shadow: 0px 1px 22px -12px var(--all-color-on-surface);
   z-index: 2;
+  box-sizing: border-box;
 
 }
 .map-content {
@@ -134,7 +138,7 @@ body {
   .main-content {
     width: 100%;
     height: 66%;
-    padding: 16px;
+    /* padding: 16px; */
 
   }
 
