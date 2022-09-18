@@ -7,22 +7,23 @@ import leaflet, { LatLng, Layer, LayerGroup, Map, TileLayer } from 'leaflet'
 import axios from 'axios'
 
 import { geoStore } from '../stores/geonames'
+import { GeoName, Coordinates } from '../utils/definitions'
+
 
 const MAPBOX_KEY: string = inject('MAPBOX_KEY') ?? ''
 
 // Geonames store with pinia
 const geonameStore = geoStore()
-const { selectedGeoData } = storeToRefs(geonameStore)
+const { selectedCoordinates } = storeToRefs(geonameStore)
 
-watch(selectedGeoData, (newData) => {
+watch(selectedCoordinates, (newData: Coordinates) => {
   console.log(newData)
   Object.assign(cityView, newData)
-  panMap(parseFloat(newData.lat), parseFloat(newData.lng))
+  panMap(newData.lat, newData.lng)
 })
 
 // Mapbox access token
 let accessToken = MAPBOX_KEY
-let geonamesUser = 'mlandim'
 
 // initializing map
 let myMap: Map
@@ -95,9 +96,11 @@ function getGeolocation() {
         console.log(result.data)
         
         if (result.status===200 && 'geonames' in result.data) {
-          let cityFound = result.data.geonames[0]
+          let cityFound: GeoName = result.data.geonames[0]
           Object.assign(cityView, cityFound)
           geonameStore.updateGeoData(cityFound)
+          let newCoordinates: Coordinates = {lat: cityFound.lat, lng: cityFound.lng}
+          geonameStore.updateCoordinates(newCoordinates)
           panMap(cityFound.lat, cityFound.lng)
         }
 
@@ -126,8 +129,8 @@ function setupMap() {
 }
 
 // Update center location
-function panMap(lat:number, lng: number){
-  myMap.flyTo([lat, lng], 10, {
+function panMap(lat: string, lng: string){
+  myMap.flyTo([Number(lat), Number(lng)], 10, {
     duration: 0.25
   })
 }

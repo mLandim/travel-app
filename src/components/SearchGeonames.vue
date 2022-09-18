@@ -1,14 +1,15 @@
-<script setup>
+<script setup lang="ts">
 
 import axios from 'axios'
+import type { Ref } from   'vue'
 import { ref, reactive, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { geoStore } from '../stores/geonames'
-
+import { Coordinates, GeoName } from '../utils/definitions'
 const geonameStore = geoStore()
 const { userName, maxResult } = storeToRefs(geonameStore)
 
-const results = ref([])
+const results: Ref<GeoName[]> = ref<GeoName[]>([])
 
 
 
@@ -33,10 +34,12 @@ const searchUpdate = () => {
     }
 }
 
-const selectResult = (item) => {
+const selectResult = (item: GeoName) => {
     console.log('selectResult')
     console.log(item)
     geonameStore.updateGeoData(item)
+    let newCoordinates: Coordinates = {lat: item.lat, lng: item.lng}
+    geonameStore.updateCoordinates(newCoordinates)
     results.value = []
     searchText.value = item.toponymName
 }
@@ -77,11 +80,10 @@ const selectResult = (item) => {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        /* height: 32px; */
         width: 100%;
         padding:8px;
         border-radius: 8px;
-        /* border: 1px solid var(--all-color-on-surface-light3); */
+        border: 1px solid var(--all-color-on-surface-light3);   
         background-color: var(--all-c0l0r-surface-controls);
         color: var(--all-color-on-surface);
     }
@@ -102,7 +104,7 @@ const selectResult = (item) => {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        top: 38px;
+        top: 40px;
         left: 0;
         height: auto;
         width: 100%;
