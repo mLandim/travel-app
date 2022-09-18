@@ -4,7 +4,7 @@ import SearchGeonames from './SearchGeonames.vue';
 <template>
     <div class="top-page">
         <div class="app-title">
-            Travel Test App
+            Generic Travel App
         </div>
         <div class="tools">
             <SearchGeonames/>
@@ -22,7 +22,7 @@ import SearchGeonames from './SearchGeonames.vue';
         height: var(--top-page-height);
         background-color: var(--all-color-surface);
         padding: 0 24px;
-        border-bottom: 1px solid var(--all-color-background);
+        /* border-bottom: 1px solid var(--all-color-background); */
         z-index: 3;
     }
 
@@ -31,7 +31,7 @@ import SearchGeonames from './SearchGeonames.vue';
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        font-size: 1.6rem;
+        font-size: 1.8rem;
         font-weight: 700;
         color: var(--all-color-primary);
     }
