@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const apiBase = 'https://travel-app-node-ts.onrender.com/'
 
-export const getCityResultsBySearch = (search: String: maxResult: Nunber = 5) => {
+export const getCityResultsBySearch = async (search: String: maxResult: Nunber = 5) => {
 
   try {
     let resultSearch = []
@@ -21,7 +21,7 @@ export const getCityResultsBySearch = (search: String: maxResult: Nunber = 5) =>
   
 }
 
-export const getReversedSearch = (lat: Number, lng: Number) => {
+export const getReversedSearch = async (lat: Number, lng: Number) => {
   try {
     let resultSearch = []
     const url = `${apiBase}api/v1/geonames/reversed?lat=${lat}&lng=${lng}`
