@@ -8,13 +8,13 @@ import axios from 'axios'
 
 import { geoStore } from '../stores/geonames'
 import { GeoName, Coordinates } from '../utils/definitions'
-
+import { getReversedSearch  } from '../api/travel-node-ts-api'
 
 const MAPBOX_KEY: string = inject('MAPBOX_KEY') ?? ''
 
 // Geonames store with pinia
 const geonameStore = geoStore()
-const { selectedCoordinates } = storeToRefs(geonameStore)
+const { selectedCoordinates   } = storeToRefs(geonameStore)
 
 watch(selectedCoordinates, (newData: Coordinates) => {
   console.log(newData)
@@ -91,19 +91,14 @@ function getGeolocation() {
       defaultLat.value = position.coords.latitude
       defaultLong.value = position.coords.longitude
       try {
-        const url = `https://travel-app-node-ts.herokuapp.com/api/v1/geonames/reversed?lat=${position.coords.latitude}&lng=${position.coords.longitude}`
-        const result = await axios.get(url)
-        console.log(result.data)
-        
-        if (result.status===200 && 'geonames' in result.data) {
-          let cityFound: GeoName = result.data.geonames[0]
-          Object.assign(cityView, cityFound)
-          geonameStore.updateGeoData(cityFound)
-          let newCoordinates: Coordinates = {lat: cityFound.lat, lng: cityFound.lng}
-          geonameStore.updateCoordinates(newCoordinates)
-          panMap(cityFound.lat, cityFound.lng)
-        }
-
+	
+	let cityFound: GeoName = await getReversedSearch(position.coords.latitude, position.coords.longitude)
+	Object.assign(cityView, cityFound)
+	geonameStore.updateGeoData(cityFound)
+	let newCoordinates: Coordinates = {lat: cityFound.lat, lng: cityFound.lng}
+	geonameStore.updateCoordinates(newCoordinates)
+	panMap(cityFound.lat, cityFound.lng)
+       
       } catch (error) {
           console.error(error.message)
       }
