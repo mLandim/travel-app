@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const apiBase = 'https://travel-app-node-ts.onrender.com/'
 
-export const getCityResultsBySearch = async (search: String: maxResult: Nunber = 5) => {
+export const getCityResultsBySearch = async (search: String, maxResult: Nunber = 5) => {
 
   try {
     let resultSearch = []
