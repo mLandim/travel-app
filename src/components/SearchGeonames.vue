@@ -6,6 +6,7 @@ import { ref, reactive, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { geoStore } from '../stores/geonames'
 import { Coordinates, GeoName } from '../utils/definitions'
+import { getCityResultsBySearch } from '../api/travel-node-ts-api'
 const geonameStore = geoStore()
 const { userName, maxResult } = storeToRefs(geonameStore)
 
@@ -16,13 +17,7 @@ const results: Ref<GeoName[]> = ref<GeoName[]>([])
 const searchText = ref('')
 const search = async () => {
     try {
-        const url = `https://travel-app-node-ts.herokuapp.com/api/v1/geonames/search-city/${searchText.value}?maxResult=5`
-        const result = await axios.get(url)
-        console.log(result.data)
-        if (result.status===200 && 'geonames' in result.data) {
-            results.value = [...result.data.geonames]
-        }
-
+        results.value = await getCityResultsBySearch(searchText.value)
     } catch (error) {
         console.error(error.message)
     }
